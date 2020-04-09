@@ -4,6 +4,12 @@ import requests
 from urllib.parse import urljoin
 import lxml
 import datetime
+import logging.config
+from os import path
+
+
+log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logger_conf')
+logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
 
 app = Flask(__name__)
 
@@ -11,13 +17,17 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
+    start = datetime.datetime.now()
     source = requests.get("https://www.imdb.com/name/nm0005363/?ref_=fn_al_nm_1")
+    app.logger.info(f'{datetime.datetime.now() - start} getting the main request')
+
+    start = datetime.datetime.now()
     soup = BeautifulSoup(source.text, 'lxml')
-    print(f'{datetime.datetime.now()} - after the main soup')
+    app.logger.info(f'{datetime.datetime.now() - start} getting the main page soup')
 
     base_url = 'https://www.imdb.com/'
 
-    role = 'actor'
+    role = 'director'
     movies_soup = soup.select(f'div[id*="{role}"]')
     movie_list = []
     for movie in movies_soup:
@@ -31,11 +41,15 @@ def index():
 
             if movie_dict['link'] is not None:
                 full_url = urljoin(base_url, movie_dict['link'])
-                app.logger.info('%s movie ', movie)
-                print(f'{datetime.datetime.now()} - before the next request and movie soup')
+
+                start = datetime.datetime.now()
                 movie_source = requests.get(full_url)
+                app.logger.info(f'{datetime.datetime.now() - start} getting the request')
+
+                start = datetime.datetime.now()
                 movie_soup = BeautifulSoup(movie_source.text, 'lxml')
-                print(f'{datetime.datetime.now()} - after the next request and movie soup')
+                app.logger.info(f'{datetime.datetime.now() - start} getting the soup')
+
                 try:
                     movie_dict['rating'] = movie_soup.select('div.ratingValue span')[0].text
                 except IndexError:
@@ -48,4 +62,3 @@ def index():
             movie_list.append(movie_dict)
 
     return render_template("index.html", movie_list=movie_list)
-

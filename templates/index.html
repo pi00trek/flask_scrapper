@@ -1,38 +1,14 @@
 <!DOCTYPE html>
-<html lang=”en”>
- <head>
-  <meta charset=”UTF-8">
-  <meta name=”viewport” content=”width=device-width, initial-scale=1.0">
-  <meta http-equiv=”X-UA-Compatible” content=”ie=edge”>
-  <title>Webscraper in Python using Flask</title>
- </head>
- <style>
-      table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-}
- </style>
- <body>
-  <h3>
-   <table>
-    <tr>
-     <th>Title</th>
-     <th>Rating</th>
-     <th>Budget</th>
-    </tr>
-     {% for movie in movie_list %}
-    <tr>
-     <td>{{ movie.title }}</td>
-     <td>{{ movie.rating }}</td>
-     <td>{{ movie.budget }}</td>
-    </tr>
-     {% endfor %}
-   </table>
-  </h3>
-<!--  <h1>{{ title }}</div>-->
-<!--  <p>{{ full_url }}</p>-->
-<!--  <article>{{ rating }}</article>-->
-<!--   <article>{{ budget }}</article>-->
- </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="POST" action="/">
+        {{ form.hidden_tag() }}
+        {{ form.person_url.label }} {{ form.person_url(size=20) }}
+        <input type="submit" value="Go">
+    </form>
+</body>
 </html>

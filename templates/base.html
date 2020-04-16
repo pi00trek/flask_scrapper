@@ -4,8 +4,26 @@
     Movie info scrapper and viz
 {% endblock %}
 
+{%- block styles %}
+ <style>
+    div.form
+    {
+        display: block;
+        text-align: center;
+    }
+    form
+    {
+        display: inline-block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: left;
+    }
+ </style>
+{%- endblock styles %}
+
+
 {% block navbar %}
     <nav class="navbar navbar-default">
-        ... navigation bar here ...
+        <a href="/">Home</a>
     </nav>
 {% endblock %}

@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<form method="POST" action="/">
-    {{ form.hidden_tag() }}
-    {{ form.person_url.label }} {{ form.person_url(size=20) }}
-    <input type="submit" value="Go">
-</form>
+<div class="form">
+    <form method="POST" action="/">
+        {{ form.hidden_tag() }}
+        {{ form.person_url.label }} {{ form.person_url(size=20) }}
+        <input type="submit" value="Go">
+    </form>
+</div>
 {% endblock %}

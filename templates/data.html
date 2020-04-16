@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{%- block styles %}
+ <style>
+      table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+}
+ </style>
+{%- endblock styles %}
+
+{% block content -%}
+  <h3> Some data
+   <div>
+    <table>
+     <tr>
+      <th>Title</th>
+      <th>Rating</th>
+      <th>Budget</th>
+     </tr>
+      {% for movie in movie_list %}
+     <tr>
+      <td>{{ movie.title }}</td>
+      <td>{{ movie.rating }}</td>
+      <td>{{ movie.budget }}</td>
+     </tr>
+      {% endfor %}
+    </table>
+   </div>
+  </h3>
+{% endblock content -%}

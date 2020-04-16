@@ -7,6 +7,7 @@ import datetime
 import logging.config
 from os import path
 from forms import AddressForm
+from flask_bootstrap import Bootstrap
 
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logger_conf')
@@ -14,6 +15,7 @@ logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
+bootstrap = Bootstrap(app)
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -106,8 +108,11 @@ def get_data():
                     genres_list_unfilt = [a.text for a in movie_soup.select('div.see-more.inline.canwrap a')]
                     movie_dict['genres'] = get_genres(genres_list_unfilt)
 
-                    movie_dict['runtime'] = int(movie_soup.select(
+                    try:
+                        movie_dict['runtime'] = int(movie_soup.select(
                         '#titleDetails > div:nth-child(23) > time')[0].text.split(' ')[0])
+                    except IndexError:
+                        pass
 
                 movie_list.append(movie_dict)
     print(movie_list)

@@ -46,3 +46,5 @@ def data_from_movie_page(movie_dict, movie_soup):
         pass
 
     return movie_dict
+
+

@@ -13,24 +13,34 @@
 {%- endblock styles %}
 
 {% block content -%}
-  <h3> Some data
+  <h3> Some data </h3>
    <div>
     <table>
      <tr>
       <th>Title</th>
+      <th>Year</th>
       <th>Rating</th>
       <th>Budget</th>
+      <th>Opening weekend USA</th>
+      <th>Gross USA</th>
+      <th>Cumulative world gross</th>
+      <th>Additional info</th>
      </tr>
       {% for movie in movie_list %}
      <tr>
       <td>{{ movie.title }}</td>
+      <td>{{ movie.year }}</td>
       <td>{{ movie.rating }}</td>
       <td>{{ movie.budget }}</td>
+      <td>{{ movie.opening_weekend_USA }}</td>
+      <td>{{ movie.gross_USA }}</td>
+      <td>{{ movie.cumulative_world_gross }}</td>
+      <td>{{ movie.add_info }}</td>
      </tr>
       {% endfor %}
     </table>
    </div>
-    <br>
-     <iframe src="/chart" width="800" height="600">Chaaaaart</iframe>
-  </h3>
+   <div>
+     <iframe src="/chart" style="position: absolute; height: 100%; border: none">Chaaaaart</iframe>
+   </div>
 {% endblock content -%}

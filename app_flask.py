@@ -92,7 +92,7 @@ def get_data():
                     movie_soup = BeautifulSoup(movie_source.text, 'lxml')
                     app.logger.info(f'{datetime.datetime.now() - start} getting the soup')
 
-                    movie_dict = data_from_movie_page(movie_dict, movie_soup)
+                    movie_dict.update(data_from_movie_page(movie_soup))
 
                     movie_list.append(movie_dict)
 

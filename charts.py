@@ -15,7 +15,8 @@ def data_prep_viz(movie_list):
     # capitalized columns for charting, non-capitalized for tooltip display (including ccy)
     for i in ['budget', 'opening_weekend_USA', 'gross_USA', 'cumulative_world_gross']:
         # df[i + '_ccy'] = df[i].str.extract(r'(^\D+)', expand=False)
-        df[i.capitalize()] = pd.to_numeric(df[i].str.replace(r'\D+', ''))
+        df[i[0].upper() + i[1:]] = pd.to_numeric(df[i].str.replace(r'\D+', ''))
+    df.to_csv("data_after_prep.csv")
     return df
 
 
@@ -45,12 +46,11 @@ def make_first_chart(df):
         alt.X(field='title', type='nominal', sort=alt.EncodingSortField(field='year')),
         alt.Y(field='value', type='quantitative'),
         tooltip=['rating', 'year', 'genres', 'runtime', 'budget',
-                 'opening_weekend_USA', 'gross_USA', 'cumulative_world_gross'],
+                 'opening_weekend_USA', 'gross_USA', 'cumulative_world_gross', 'add_info'],
     ).add_selection(
         sel
     )
 
     chart_location = path.join(path.dirname(path.abspath(__file__)), 'templates/charts/chart1.html')
-    print(chart_location)
 
     return chart.save(chart_location)

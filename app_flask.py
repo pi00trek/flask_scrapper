@@ -9,6 +9,7 @@ from os import path
 from forms import AddressForm
 from flask_bootstrap import Bootstrap
 from data import data_from_movie_page
+from charts import data_prep_viz, make_first_chart
 
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logger_conf')
@@ -91,9 +92,16 @@ def get_data():
                     movie_soup = BeautifulSoup(movie_source.text, 'lxml')
                     app.logger.info(f'{datetime.datetime.now() - start} getting the soup')
 
-                    movie_dict = data_from_movie_page(movie_dict, movie_soup)
+                    movie_dict.update(data_from_movie_page(movie_soup))
 
-                movie_list.append(movie_dict)
+                    movie_list.append(movie_dict)
+
     print(movie_list)
+    make_first_chart(data_prep_viz(movie_list))
 
     return render_template("data.html", movie_list=movie_list)
+
+
+@app.route('/chart')
+def charting():
+    return render_template("charts/chart1.html")

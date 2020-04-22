@@ -1,7 +1,7 @@
 import re
 
 
-def data_from_movie_page(movie_soup):
+def data_from_movie_page(movie_soup):# TODO: check if eveyrhing based on https://www.imdb.com/name/nm0000233/?ref_=nv_sr_srsg_0 -> editor
 
     def get_messy_data(movie_soup):
         messy_data_dict = {}

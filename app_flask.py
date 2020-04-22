@@ -11,7 +11,6 @@ from flask_bootstrap import Bootstrap
 from data import data_from_movie_page
 from charts import data_prep_viz, make_first_chart
 
-
 log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logger_conf')
 logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
 
@@ -23,6 +22,8 @@ bootstrap = Bootstrap(app)
 @app.route('/', methods=('GET', 'POST'))
 def index():
     form = AddressForm()
+    session['navbar_role_selection'] = False
+
     if form.validate_on_submit():
         session['person_url'] = request.form['person_url']
 
@@ -36,6 +37,8 @@ def index():
         app.logger.info(f'{datetime.datetime.now() - start} getting the main page soup')
 
         session['roles'] = [i.get('data-category') for i in soup.find('div', {'id': 'jumpto'}).find_all('a')]
+        session['person'] = soup.select('h1 span', class_='itemprop')[
+            0].get_text()  # Todo: redo other data extraction with get_text()
 
         return redirect('/role')
 
@@ -44,13 +47,13 @@ def index():
 
 @app.route('/role', methods=('GET', 'POST'))
 def role():
-    roles = session['roles']
-    return render_template('roles.html', roles=roles)
+    print(session.items())
+    session['navbar_role_selection'] = False
+    return render_template('roles.html', roles=session['roles'], person=session['person'])
 
 
 @app.route('/data')
 def get_data():
-
     # repeated in index()
     start = datetime.datetime.now()
     # url = "https://www.imdb.com/name/nm0005363/?ref_=fn_al_nm_1"
@@ -98,8 +101,9 @@ def get_data():
 
     print(movie_list)
     make_first_chart(data_prep_viz(movie_list))
+    session['navbar_role_selection'] = True
 
-    return render_template("data.html", movie_list=movie_list)
+    return render_template("data.html", movie_list=movie_list, person=session['person'])
 
 
 @app.route('/chart')

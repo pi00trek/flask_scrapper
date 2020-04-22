@@ -4,26 +4,19 @@
     Movie info scrapper and viz
 {% endblock %}
 
-{%- block styles %}
- <style>
-    div.form
-    {
-        display: block;
-        text-align: center;
-    }
-    form
-    {
-        display: inline-block;
-        margin-left: auto;
-        margin-right: auto;
-        text-align: left;
-    }
- </style>
-{%- endblock styles %}
+
 
 
 {% block navbar %}
     <nav class="navbar navbar-default">
         <a href="/">Home</a>
+        {% if person %}
+        <center>
+            <p>{{ person }}</p>
+            {% if session['navbar_role_selection'] %}
+            <a href="/role">Select a different role</a>
+            {% endif %}
+        </center>
+        {% endif %}
     </nav>
 {% endblock %}

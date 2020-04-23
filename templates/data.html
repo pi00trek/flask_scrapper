@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {%- block styles %}
+{{super()}}
  <style>
       table, th, td {
   border: 1px solid black;
@@ -11,22 +12,49 @@
 {%- endblock styles %}
 
 {% block content -%}
-  <h3> Some data
+  <h3> Some data </h3>
    <div>
     <table>
      <tr>
       <th>Title</th>
+      <th>Year</th>
       <th>Rating</th>
       <th>Budget</th>
+      <th>Opening weekend USA</th>
+      <th>Gross USA</th>
+      <th>Cumulative world gross</th>
+      <th>Additional info</th>
      </tr>
       {% for movie in movie_list %}
      <tr>
       <td>{{ movie.title }}</td>
+      <td>{{ movie.year }}</td>
       <td>{{ movie.rating }}</td>
       <td>{{ movie.budget }}</td>
+      <td>{{ movie.opening_weekend_USA }}</td>
+      <td>{{ movie.gross_USA }}</td>
+      <td>{{ movie.cumulative_world_gross }}</td>
+      <td>{{ movie.add_info }}</td>
      </tr>
       {% endfor %}
     </table>
    </div>
-  </h3>
+   <div>
+     {% if ccy_info_dict %}
+    <p> All budget values expressed in {{ main_budget_ccy }} with the following exception(s):</p>
+      {% for key, value in ccy_info_dict.items() %}
+    <p>
+      {{value}} in {{ key }}
+    </p>
+      {% endfor %}
+     {% else %}
+    <p>
+     All budget values expressed in USD.
+    </p>
+     {% endif %}
+   </div>
+   <div>
+     <iframe src="/chart" style="position: absolute; height: 100%; width: 100%; border: none">Chaaaaart</iframe>
+   </div>
+
 {% endblock content -%}

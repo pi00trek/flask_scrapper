@@ -4,8 +4,19 @@
     Movie info scrapper and viz
 {% endblock %}
 
+
+
+
 {% block navbar %}
     <nav class="navbar navbar-default">
-        ... navigation bar here ...
+        <a href="/">Home</a>
+        {% if person %}
+        <center>
+            <p>{{ person }}</p>
+            {% if session['navbar_role_selection'] %}
+            <a href="/role">Select a different role</a>
+            {% endif %}
+        </center>
+        {% endif %}
     </nav>
 {% endblock %}

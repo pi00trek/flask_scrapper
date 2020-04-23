@@ -1,67 +1,40 @@
 import re
 
 
-def data_from_movie_page(movie_soup):# TODO: check if eveyrhing based on https://www.imdb.com/name/nm0000233/?ref_=nv_sr_srsg_0 -> editor
+def data_from_movie_page(movie_soup):
 
-    def get_messy_data(movie_soup):
-        messy_data_dict = {}
+    movie_dict = {}
 
+    # get box office info:
+    # keys: key names for movie_dict
+    # values: text to be searched for to scrap box office info
+    box_office_to_scrap = {'budget': 'Budget:',
+                           'opening_weekend_USA': 'Opening Weekend USA:',
+                           'gross_USA': 'Gross USA:',
+                           'cumulative_world_gross': 'Cumulative Worldwide Gross'}
+
+    for key, value in box_office_to_scrap.items():
         try:
-            messy_data_dict['budget'] = movie_soup.select(
-                '#titleDetails > div:nth-child(12)'
-            )[0].text.split()[0].split(':')[1]
-        except IndexError:
-            pass
-        try:
-            messy_data_dict['opening_weekend_USA'] = movie_soup.select(
-                '#titleDetails > div:nth-child(13)'
-            )[0].text.split("\n")[1].split(' ')[-1]
-        except IndexError:
-            pass
-        try:
-            messy_data_dict['gross_USA'] = movie_soup.select(
-                '#titleDetails > div:nth-child(14)'
-            )[0].text.strip().split(" ")[-1]
-        except IndexError:
-            pass
-        try:
-            messy_data_dict['cumulative_world_gross'] = movie_soup.select(
-                '#titleDetails > div:nth-child(15)'
-            )[0].text.strip().split(" ")[-1]
-        except IndexError:
+            movie_dict[key] = movie_soup.find('h4', string=value).next_sibling.strip()
+        except AttributeError:
             pass
 
-        # remove garbage (possible in, e.g. tv series) -> not including at least 2 consecutive digits
-        _digits = re.compile(r"\d{2,}")
-
-        def contains_digits(d):
-            return bool(_digits.search(d))
-
-        messy_data_dict = {k: v for k, v in messy_data_dict.items() if contains_digits(v)}
-
-        return messy_data_dict
-
-    movie_dict = get_messy_data(movie_soup)
-
-
+    # remaining items:
     try:
         movie_dict['rating'] = movie_soup.select('div.ratingValue span')[0].text
     except IndexError:
         pass
 
-    def get_genres(genres_list_unfilt):
-        for idx, item in enumerate(genres_list_unfilt):
-            if item[:5] == 'See A':
-                genres_list = [genre.strip() for genre in genres_list_unfilt[idx + 1:]]
-                return genres_list
-
-    genres_list_unfilt = [a.text for a in movie_soup.select('div.see-more.inline.canwrap a')]
-    movie_dict['genres'] = get_genres(genres_list_unfilt)
+    try:
+        movie_dict['runtime'] = movie_soup.find('h4', string='Runtime:').find_next_sibling.text
+    except AttributeError:
+        pass
 
     try:
-        movie_dict['runtime'] = int(movie_soup.select(
-            '#titleDetails > div:nth-child(23) > time')[0].text.split(' ')[0])
-    except IndexError:
+        movie_dict['genres'] = [
+            i.text.strip() for i in movie_soup.find('h4', string="Genres:").find_next_siblings() if i.text.strip() != '|'
+        ]
+    except AttributeError:
         pass
 
     return movie_dict

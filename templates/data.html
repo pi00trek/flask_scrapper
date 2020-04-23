@@ -41,12 +41,16 @@
    </div>
    <div>
      {% if ccy_info_dict %}
-    <p>All budget values expressed in {{ main_budget_ccy }} with the following exception(s):</p>
+    <p> All budget values expressed in {{ main_budget_ccy }} with the following exception(s):</p>
       {% for key, value in ccy_info_dict.items() %}
     <p>
       {{value}} in {{ key }}
     </p>
       {% endfor %}
+     {% else %}
+    <p>
+     All budget values expressed in USD.
+    </p>
      {% endif %}
    </div>
    <div>

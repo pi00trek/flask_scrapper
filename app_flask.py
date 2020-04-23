@@ -9,7 +9,7 @@ from os import path
 from forms import AddressForm
 from flask_bootstrap import Bootstrap
 from data import data_from_movie_page
-from charts import data_prep_viz, make_first_chart
+from charts import data_prep_viz, make_first_chart,budget_ccy_info
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logger_conf')
 logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
@@ -100,10 +100,20 @@ def get_data():
                     movie_list.append(movie_dict)
 
     print(movie_list)
-    make_first_chart(data_prep_viz(movie_list))
+
+    clean_df = data_prep_viz(movie_list)
+    make_first_chart(clean_df)
+
+    ccy_info_dict = budget_ccy_info(clean_df)
+    if ccy_info_dict:
+        main_budget_ccy = ccy_info_dict.pop('main_budget_ccy')
+    else:
+        main_budget_ccy = None
+
     session['navbar_role_selection'] = True
 
-    return render_template("data.html", movie_list=movie_list, person=session['person'])
+    return render_template("data.html", movie_list=movie_list, person=session['person'],
+                           main_budget_ccy=main_budget_ccy, ccy_info_dict=ccy_info_dict)
 
 
 @app.route('/chart')

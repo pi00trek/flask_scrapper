@@ -1,25 +1,19 @@
-from flask import Flask, render_template, redirect, request, session
+from flask import render_template, redirect, request, session, Blueprint, current_app
 from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urljoin
 import lxml
 import datetime
-import logging.config
-from os import path
-from forms import AddressForm
-from flask_bootstrap import Bootstrap
-from data import data_from_movie_page
-from charts import data_prep_viz, make_first_chart,budget_ccy_info
-
-log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logger_conf')
-logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'you-will-never-guess'
-bootstrap = Bootstrap(app)
+# import logging.config
+from box_office_info_app.forms import AddressForm
+from box_office_info_app.data import data_from_movie_page
+from box_office_info_app.charts import data_prep_viz, make_first_chart,budget_ccy_info
 
 
-@app.route('/', methods=('GET', 'POST'))
+bp = Blueprint('bp_app', __name__)
+
+
+@bp.route('/', methods=('GET', 'POST'))
 def index():
     form = AddressForm()
     session['navbar_role_selection'] = False
@@ -30,11 +24,11 @@ def index():
         start = datetime.datetime.now()
         url = session['person_url']
         source = requests.get(url)
-        app.logger.info(f'{datetime.datetime.now() - start} getting the main request')
+        current_app.logger.info(f'{datetime.datetime.now() - start} getting the main request')
 
         start = datetime.datetime.now()
         soup = BeautifulSoup(source.text, 'lxml')
-        app.logger.info(f'{datetime.datetime.now() - start} getting the main page soup')
+        current_app.logger.info(f'{datetime.datetime.now() - start} getting the main page soup')
 
         session['roles'] = [i.get('data-category') for i in soup.find('div', {'id': 'jumpto'}).find_all('a')]
         session['person'] = soup.select('h1 span', class_='itemprop')[
@@ -45,24 +39,24 @@ def index():
     return render_template('index.html', form=form)
 
 
-@app.route('/role', methods=('GET', 'POST'))
+@bp.route('/role', methods=('GET', 'POST'))
 def role():
     print(session.items())
     session['navbar_role_selection'] = False
     return render_template('roles.html', roles=session['roles'], person=session['person'])
 
 
-@app.route('/data')
+@bp.route('/data')
 def get_data():
     # repeated in index()
     start = datetime.datetime.now()
     # url = "https://www.imdb.com/name/nm0005363/?ref_=fn_al_nm_1"
     url = session['person_url']
     source = requests.get(url)
-    app.logger.info(f'{datetime.datetime.now() - start} getting the main request')
+    current_app.logger.info(f'{datetime.datetime.now() - start} getting the main request')
     start = datetime.datetime.now()
     soup = BeautifulSoup(source.text, 'lxml')
-    app.logger.info(f'{datetime.datetime.now() - start} getting the main page soup')
+    current_app.logger.info(f'{datetime.datetime.now() - start} getting the main page soup')
 
     selected_role = request.args.get('roles', '')
 
@@ -89,11 +83,11 @@ def get_data():
 
                     start = datetime.datetime.now()
                     movie_source = requests.get(full_url)
-                    app.logger.info(f'{datetime.datetime.now() - start} getting the request')
+                    # app.logger.info(f'{datetime.datetime.now() - start} getting the request')
 
                     start = datetime.datetime.now()
                     movie_soup = BeautifulSoup(movie_source.text, 'lxml')
-                    app.logger.info(f'{datetime.datetime.now() - start} getting the soup')
+                    # app.logger.info(f'{datetime.datetime.now() - start} getting the soup')
 
                     movie_dict.update(data_from_movie_page(movie_soup))
 
@@ -116,6 +110,6 @@ def get_data():
                            main_budget_ccy=main_budget_ccy, ccy_info_dict=ccy_info_dict)
 
 
-@app.route('/chart')
+@bp.route('/chart')
 def charting():
     return render_template("charts/chart1.html")
